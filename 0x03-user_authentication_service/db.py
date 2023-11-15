@@ -5,13 +5,12 @@ from sqlalchemy.exc import InvalidRequestError
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.exc import NoResultFound
-from typing import TypeVar, Type
+from typing import TypeVar
 from user import Base, User
 
 
 class DB:
     """ class """
-
     def __init__(self):
         """ constructor """
         self._engine = create_engine("sqlite:///a.db", echo=False)
@@ -46,12 +45,12 @@ class DB:
         return user
 
     def update_user(self, user_id: int, **kwargs) -> None:
-        """ update a user’s attributes """
-        user = self.find_user_by(id=user_id)
-        if kwargs is None:
-            raise InvalidRequestError
+        """ locate the user to update, then will update the user’s attributes
+            as passed in the method’s arguments then commit changes to the
+            database """
+        _id = self.find_user_by(id=user_id)
         for key, value in kwargs.items():
-            if key == "id":
+            if not hasattr(_id, key):
                 raise ValueError
-            setattr(user, key, value)
+            setattr(_id, key, value)
         self._session.commit()
