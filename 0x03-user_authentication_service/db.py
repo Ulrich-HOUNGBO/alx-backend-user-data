@@ -5,12 +5,13 @@ from sqlalchemy.exc import InvalidRequestError
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.exc import NoResultFound
-from typing import TypeVar
+from typing import TypeVar, Type
 from user import Base, User
 
 
 class DB:
     """ class """
+
     def __init__(self):
         """ constructor """
         self._engine = create_engine("sqlite:///a.db", echo=False)
@@ -31,4 +32,14 @@ class DB:
         user = User(email=email, hashed_password=hashed_password)
         self._session.add(user)
         self._session.commit()
+        return user
+
+    def find_user_by(self, **kwargs) -> Type[User]:
+        """ find user by email """
+        if not kwargs:
+            raise InvalidRequestError
+        try:
+            user = self._session.query(User).filter_by(**kwargs).first()
+        except NoResultFound:
+            raise NoResultFound
         return user
