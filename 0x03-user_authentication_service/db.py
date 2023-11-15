@@ -34,12 +34,13 @@ class DB:
         self._session.commit()
         return user
 
-    def find_user_by(self, **kwargs) -> Type[User]:
-        """ find user by email """
+    def find_user_by(self, **kwargs) -> User:
+        """ takes in arbitrary keyword arguments and returns the first row
+            found in the users table as filtered by the method’s input
+            arguments """
         if kwargs is None:
             raise InvalidRequestError
-        try:
-            user = self._session.query(User).filter_by(**kwargs).first()
-        except NoResultFound:
+        user = self._session.query(User).filter_by(**kwargs).first()
+        if user is None:
             raise NoResultFound
         return user
