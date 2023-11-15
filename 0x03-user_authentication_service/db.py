@@ -36,7 +36,7 @@ class DB:
 
     def find_user_by(self, **kwargs) -> Type[User]:
         """ find user by email """
-        if not kwargs:
+        if kwargs is None:
             raise InvalidRequestError
         try:
             user = self._session.query(User).filter_by(**kwargs).first()
